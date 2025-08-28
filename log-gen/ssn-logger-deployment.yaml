@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ssn-logger
+  labels:
+    app: ssn-logger
+    namespace: opw
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ssn-logger
+  template:
+    metadata:
+      labels:
+        app: ssn-logger
+    spec:
+      containers:
+      - name: ssn-generator
+        image: alpine:latest
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          # Generate SSN patterns in various formats
+          while true; do
+            # Generate random SSN components
+            area=$((RANDOM % 900 + 100))  # 100-999
+            group=$((RANDOM % 90 + 10))   # 10-99
+            serial=$((RANDOM % 9000 + 1000))  # 1000-9999
+            
+            # Different SSN formats
+            ssn1="$area-$group-$serial"
+            ssn2="$area$group$serial"
+            ssn3="$area $group $serial"
+            
+            # Random log messages with SSNs
+            case $((RANDOM % 10)) in
+              0) echo "User profile updated with SSN: $ssn1" ;;
+              1) echo "Tax form submitted for SSN $ssn2" ;;
+              2) echo "Employee record created - SSN: $ssn3" ;;
+              3) echo "Application processed for taxpayer $ssn1" ;;
+              4) echo "SSN verification completed: $ssn2" ;;
+              5) echo "Customer service call - SSN provided: $ssn3" ;;
+              6) echo "Background check initiated for $ssn1" ;;
+              7) echo "Direct deposit setup for SSN $ssn2" ;;
+              8) echo "Insurance claim filed with SSN: $ssn3" ;;
+              9) echo "Loan application received for $ssn1" ;;
+            esac
+            
+            sleep 0.1  # 10 logs per second
+          done

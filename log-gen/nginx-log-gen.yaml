@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    tags.datadoghq.com/service: "nginx"
+  namespace: opw
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        tags.datadoghq.com/service: "nginx"
+    spec:
+      containers:
+      - name: nginx
+        image: kscarlett/nginx-log-generator
+        env:
+        - name: "RATE"
+          value: "10"
+        - name: "DD_SERVICE"
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['tags.datadoghq.com/service']
